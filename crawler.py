@@ -1,5 +1,6 @@
 # 爬取12306的验证码
 from io import BytesIO
+from time import sleep
 
 import requests
 from termcolor import colored
@@ -27,6 +28,7 @@ def get_proxy_ip():
         return ip_and_port.strip().split(':')
     except Exception as e:
         print(e)
+        return None,None
 
 
 def validation_proxy(ip, port, test_url='https://www.12306.cn/index/images/logo.jpg'):
@@ -86,6 +88,10 @@ if __name__ == '__main__':
     success_counter = 0
     while True:
         proxy_ip, proxy_port = get_proxy_ip()
+        if proxy_ip is None and proxy_port is None:
+            print("当前没有可用的代理ip了，睡10秒")
+            sleep(10)
+            continue
         if validation_proxy(proxy_ip, proxy_port):
             print("Test Success:", colored('%s:%s' % (proxy_ip, proxy_port), 'green'))
             pic = get_pic(proxy_ip, proxy_port)
