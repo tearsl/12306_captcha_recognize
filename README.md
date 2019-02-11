@@ -9,6 +9,14 @@
 ## 思路
 
 ## how to run
+```bash
+git clone --recurse-submodules https://github.com/tearsl/12306_captcha_recognize
+cd 12306_captcha_recognize/Docker
+# 如果没有docker-compose需要预先安装docker-compose
+# pip install docker-compose
+# 第一次运行需要添加--build
+docker-compose up # --build
+```
 
 ## Contributors
 [Novio](https://github.com/novioleo)  
