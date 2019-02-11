@@ -25,6 +25,8 @@ def get_proxy_ip():
     try:
         ip_and_port = requests.get(
             "http://{ip}:{port}/get".format_map({'ip': proxy_pool_host_ip, 'port': proxy_pool_host_port})).text
+        if ip_and_port == 'no proxy!':
+            return None,None
         return ip_and_port.strip().split(':')
     except Exception as e:
         print(e)
