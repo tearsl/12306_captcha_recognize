@@ -10,6 +10,7 @@ import base64
 import os
 from uuid import uuid1
 from PIL import Image
+import datetime
 
 from urllib3.exceptions import InsecureRequestWarning
 import urllib3
@@ -90,9 +91,13 @@ def sink_pic(image_base64_str, target_folder):
 if __name__ == '__main__':
     success_counter = 0
     while True:
+        cur_hour = datetime.datetime.now().hour
+        if cur_hour >= 23 or cur_hour < 6:
+            sleep(3600)
+            continue
         proxy_ip, proxy_port = get_proxy_ip()
         if proxy_ip is None and proxy_port is None:
-            print("当前没有可用的代理ip了，睡10秒")
+            print("当前没有可用的代理ip了，睡60秒")
             sleep(60)
             continue
         if validation_proxy(proxy_ip, proxy_port):
