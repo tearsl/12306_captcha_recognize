@@ -1,4 +1,5 @@
 # 爬取12306的验证码
+import sys
 from io import BytesIO
 from time import sleep
 
@@ -92,12 +93,13 @@ if __name__ == '__main__':
         proxy_ip, proxy_port = get_proxy_ip()
         if proxy_ip is None and proxy_port is None:
             print("当前没有可用的代理ip了，睡10秒")
-            sleep(10)
+            sleep(60)
             continue
         if validation_proxy(proxy_ip, proxy_port):
             print("Test Success:", colored('%s:%s' % (proxy_ip, proxy_port), 'green'))
             pic = get_pic(proxy_ip, proxy_port)
-            if isinstance(pic, str):
+            pic_size = sys.getsizeof(pic)
+            if isinstance(pic, str) and pic_size > 3000:
                 sink_pic(pic.encode('utf-8'), os.path.join('.', 'pics'))
                 success_counter += 1
                 print(success_counter)
