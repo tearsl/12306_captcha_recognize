@@ -1,3 +1,6 @@
 [submodule "proxy_pool"]
 	path = proxy_pool
 	url = https://github.com/novioleo/proxy_pool.git
+[submodule "LSHash"]
+	path = LSHash
+	url = https://github.com/kayzhu/LSHash
