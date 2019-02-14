@@ -19,6 +19,9 @@ docker-compose up # --build
 ```
 启动代理ip池之后，运行crawler，为了避免使用多进程，减少代码复杂程度，想要增加爬虫的并发数直接运行多个即可。
 
-将图片保存到本地之后，运行denoise.py
+将图片保存到本地之后，运行`python image_cutout.py /path/to/pics/folder`，会在图片所在的文件夹同级目录新建一个文件夹，
+以及生成一个映射文件。装载切图后的结果。
+
+
 ## Contributors
 [Novio](https://github.com/novioleo)  
