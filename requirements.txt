@@ -3,3 +3,5 @@ termcolor
 pillow
 numpy
 tqdm
+bitarray
+redis
