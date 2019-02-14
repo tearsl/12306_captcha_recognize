@@ -6,3 +6,4 @@ tqdm
 bitarray
 redis
 scikit-image
+scipy
