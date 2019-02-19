@@ -7,6 +7,7 @@
 首先获取爬虫代理，框架和方法引用自https://github.com/novioleo/proxy_pool
 
 ## 思路
+![流程图](./流程图.png)
 
 ## how to run
 ```bash
