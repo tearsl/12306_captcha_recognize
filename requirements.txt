@@ -7,3 +7,5 @@ bitarray
 redis
 scikit-image
 scipy
+torch
+torchvision
