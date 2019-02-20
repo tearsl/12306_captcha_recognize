@@ -9,3 +9,4 @@ scikit-image
 scipy
 torch
 torchvision
+scikit-learn==0.20.2
