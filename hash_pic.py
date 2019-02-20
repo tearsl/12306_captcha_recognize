@@ -4,11 +4,6 @@ from PIL import Image
 from HardNetExtractor import HardNetExtractor
 
 
-class HardNetFeatureExtractor:
-    def __init__(self):
-        pass
-
-
 class PQTable:
     def __init__(self):
         pass
@@ -38,8 +33,8 @@ def compute_feature_vector(pic: Image, feature_category: str, feature_detect_met
         pass
     elif feature_category == 'ORB':
         from skimage.feature import ORB
-        orb = ORB()
-        to_return = orb.detect_and_extract(np.array(pic))
+        # orb = ORB()
+        # to_return = orb.detect_and_extract(np.array(pic))
     elif feature_category == 'HardNet++':
         extractor = HardNetExtractor()
         to_return = extractor.extract(pic_patches)
