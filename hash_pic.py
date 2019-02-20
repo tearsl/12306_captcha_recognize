@@ -1,6 +1,13 @@
 import numpy as np
 from PIL import Image
 
+from HardNetExtractor import HardNetExtractor
+
+
+class HardNetFeatureExtractor:
+    def __init__(self):
+        pass
+
 
 class PQTable:
     def __init__(self):
@@ -16,18 +23,26 @@ class PQTable:
         pass
 
 
-def compute_feature_vector(pic: Image, feature_category: str):
-    # 由于图片较小，这里直接特征点就是整张图片，也就是特征向量是用来反映整个图片的特征
-    # 选择特定类型的函数用来描述当前图片的特征
-    # TODO:
-    # 利用ORB进行特征点检测，并使用对应特征提取算法，将提取的特征向量使用VLAD，最终得到一个固定长度的特征向量
+def compute_feature_vector(pic: Image, feature_category: str, feature_detect_method=None):
+    """
+    提取图片特征向量
+    :param pic:     当前需要进行特征向量提取的图片
+    :param feature_category:    特征向量对应函数
+    :param feature_detect_method:   特征点检测函数，如果为None，则将整张图片作为特征点
+    :return:    n*m，n为特征点数，m为每个特征向量长度
+    """
     to_return = np.zeros([128])
+    pic_patches = feature_detect_method(pic) if feature_detect_method is not None else \
+        [np.array(pic.convert('L').resize((32, 32))), ]
     if feature_category == 'HOG':
         pass
     elif feature_category == 'ORB':
         from skimage.feature import ORB
         orb = ORB()
         to_return = orb.detect_and_extract(np.array(pic))
+    elif feature_category == 'HardNet++':
+        extractor = HardNetExtractor()
+        to_return = extractor.extract(pic_patches)
     else:
         raise Exception("没有适配%s这个特征类型")
 
@@ -70,7 +85,7 @@ def load_to_pqtable():
 
 
 if __name__ == '__main__':
-    pic_path = "./0000ac08-2eb9-11e9-91b2-b4b686ea7832_1.jpg"
+    pic_path = "../12306/12306_pics_test_cut/0a0a88f7-2f20-11e9-91b7-b4b686ea7832_2.jpg"
     pic = Image.open(pic_path)
     np.set_printoptions(threshold=np.inf)
-    print(compute_feature_vector(pic, 'ORB'))
+    print(compute_feature_vector(pic, 'HardNet++'))
