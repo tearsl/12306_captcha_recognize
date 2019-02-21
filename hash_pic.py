@@ -1,7 +1,12 @@
+import itertools
+import os
+from glob import glob
+
 import numpy as np
 from PIL import Image
 
-from HardNetExtractor import HardNetExtractor
+from FeatureFusion import VLAD
+from HardNetDescriptor import HardNetDescriptor
 
 
 class PQTable:
@@ -18,29 +23,23 @@ class PQTable:
         pass
 
 
-def compute_feature_vector(pic: Image, feature_category: str, feature_detect_method=None):
+def compute_feature_vector(pic: Image, feature_descriptor, feature_detect_method=None, fusion_method=None):
     """
     提取图片特征向量
     :param pic:     当前需要进行特征向量提取的图片
-    :param feature_category:    特征向量对应函数
+    :param feature_descriptor:    特征描述函数
     :param feature_detect_method:   特征点检测函数，如果为None，则将整张图片作为特征点
+    :param fusion_method:       特征融合函数，如果为None，则就输出图片的特征，不需要融合
     :return:    n*m，n为特征点数，m为每个特征向量长度
     """
-    to_return = np.zeros([128])
     pic_patches = feature_detect_method(pic) if feature_detect_method is not None else \
         [np.array(pic.convert('L').resize((32, 32))), ]
-    if feature_category == 'HOG':
-        pass
-    elif feature_category == 'ORB':
-        from skimage.feature import ORB
-        # orb = ORB()
-        # to_return = orb.detect_and_extract(np.array(pic))
-    elif feature_category == 'HardNet++':
-        extractor = HardNetExtractor()
-        to_return = extractor.extract(pic_patches)
-    else:
-        raise Exception("没有适配%s这个特征类型")
-
+    feature_vectors = feature_descriptor(pic_patches)
+    assert feature_vectors is not None, '特征向量不能为空'
+    to_return = fusion_method(feature_vectors) if fusion_method is not None else feature_vectors
+    if len(to_return) == 1:
+        to_return = to_return[0]
+    assert len(to_return.shape) == 1, '需要进行特征融合变为一个特征向量'
     return to_return
 
 
@@ -79,8 +78,28 @@ def load_to_pqtable():
     pass
 
 
+def get_item_pic_train_dataset(pic_folder, desc):
+    all_train_item_pic = [[np.array(Image.open(m_file).convert('L').resize((32, 32))), ] for m_file in
+                          glob(os.path.join(pic_folder, '*_[0-9].jpg'))]
+    return np.array(list(itertools.chain.from_iterable(
+        [desc.describle(m_train_item_pic) for m_train_item_pic in all_train_item_pic])))
+
+
+def get_word_pic_train_dataset(pic_folder, desc):
+    all_train_word_pic = [[np.array(Image.open(m_file).convert('L').resize((32, 32))), ] for m_file in
+                          glob(os.path.join(pic_folder, '*_desc.jpg'))]
+    return np.array(list(itertools.chain.from_iterable(
+        [desc.describle(m_train_word_pic) for m_train_word_pic in all_train_word_pic])))
+
+
 if __name__ == '__main__':
+    descriptor = HardNetDescriptor()
+    test_pic_folder = "../12306/12306_pics_test_cut"
+    # item_train_dataset = get_item_pic_train_dataset(test_pic_folder,descriptor)
+    vlad = VLAD(exist_visual_dict='./item_test_kmeans_cluster.pkl')
+    # vlad.train(item_train_dataset,'./item_test_kmeans_cluster.pkl')
+
     pic_path = "../12306/12306_pics_test_cut/0a0a88f7-2f20-11e9-91b7-b4b686ea7832_2.jpg"
     pic = Image.open(pic_path)
     np.set_printoptions(threshold=np.inf)
-    print(compute_feature_vector(pic, 'HardNet++'))
+    print(compute_feature_vector(pic, descriptor.describle, fusion_method=vlad.aggregate))
