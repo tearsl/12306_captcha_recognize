@@ -29,8 +29,8 @@ def storage(storage_config, index):
 
 class BaseStorage(object):
     def __init__(self, config):
-        """ An abstract class used as an adapter for storages. """
-        raise NotImplementedError
+        """ An abstract class used as an adapter for storage. """
+        pass
 
     def keys(self):
         """ Returns a list of binary hashes that are used as dict keys. """
