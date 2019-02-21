@@ -1,12 +1,16 @@
 import itertools
 import os
 from glob import glob
+from pprint import pprint
 
 import numpy as np
 from PIL import Image
 
-from FeatureFusion import VLAD
-from HardNetDescriptor import HardNetDescriptor
+from feature_fusion.VLAD import VLAD
+from descriptors.HardNetDescriptor import HardNetDescriptor
+from termcolor import colored
+from tqdm import tqdm
+from lshash import LSHash
 
 
 class PQTable:
@@ -43,6 +47,20 @@ def compute_feature_vector(pic: Image, feature_descriptor, feature_detect_method
     return to_return
 
 
+def get_item_pic_train_dataset(pic_folder, desc):
+    all_train_item_pic = [[np.array(Image.open(m_file).convert('L').resize((32, 32))), ] for m_file in
+                          glob(os.path.join(pic_folder, '*_[0-9].jpg'))]
+    return np.array(list(itertools.chain.from_iterable(
+        [desc.describle(m_train_item_pic) for m_train_item_pic in all_train_item_pic])))
+
+
+def get_word_pic_train_dataset(pic_folder, desc):
+    all_train_word_pic = [[np.array(Image.open(m_file).convert('L').resize((32, 32))), ] for m_file in
+                          glob(os.path.join(pic_folder, '*_desc.jpg'))]
+    return np.array(list(itertools.chain.from_iterable(
+        [desc.describle(m_train_word_pic) for m_train_word_pic in all_train_word_pic])))
+
+
 def word_pic_tps(pic: Image):
     # 对文字图像进行tps
     return pic
@@ -66,11 +84,40 @@ def hash_word_pic(pic_folder):
     # word_pic_lsh.dump(os.path.join('.','word_pic_lsh.pkl'))
 
 
-def hash_item_pic():
-    # 计算整张图的hog特征
-    # 配置LSH
-    # 输出每张图的hash字符串到文件
-    pass
+def hash_item_pic_v1(pic_folder):
+    """
+    当前版本采用HardNet直接进行特征输出，并且对整张图作为特征区域进行特征向量输出，会在图片所在同级
+    目录输出一个图片与hash值编码的映射文件
+
+    这种方案出来的结果是如果图片有平移则特征向量会有差距
+
+    :param pic_folder:  所有图片所在文件夹
+    :return:    是否成功
+    """
+    try:
+        # 计算所有图片的特征向量
+        desc = HardNetDescriptor()
+        print(colored("HardNet模型加载完成", color='blue'))
+        # 使用LSH
+        lsh = LSHash(16, 128)
+        img_feature_vector = {}
+        with open(pic_folder + '_item_hash.txt', 'w') as to_write:
+            img_file_list = glob(os.path.join(pic_folder, '*_[0-9].jpg'))
+            for m_img_file in tqdm(img_file_list,desc='训练中'):
+                fv = desc.describle([np.array(Image.open(m_img_file).convert('L').resize((32, 32))), ])[0]
+                img_feature_vector[m_img_file] = fv
+                lsh.index(fv,extra_data=m_img_file)
+            for m_img_file in tqdm(img_file_list,desc='输出中'):
+                res = lsh.query(img_feature_vector[m_img_file],distance_func='centred_euclidean')
+                # 输出所有临近的图片
+                print(m_img_file,'|'.join(map(lambda x:x[0][1],res)))
+        pass
+        return True
+    except Exception as e:
+        print(colored("错误:%s" % str(e), color='red'))
+        return False
+
+
 
 
 def load_to_pqtable():
@@ -78,28 +125,16 @@ def load_to_pqtable():
     pass
 
 
-def get_item_pic_train_dataset(pic_folder, desc):
-    all_train_item_pic = [[np.array(Image.open(m_file).convert('L').resize((32, 32))), ] for m_file in
-                          glob(os.path.join(pic_folder, '*_[0-9].jpg'))]
-    return np.array(list(itertools.chain.from_iterable(
-        [desc.describle(m_train_item_pic) for m_train_item_pic in all_train_item_pic])))
-
-
-def get_word_pic_train_dataset(pic_folder, desc):
-    all_train_word_pic = [[np.array(Image.open(m_file).convert('L').resize((32, 32))), ] for m_file in
-                          glob(os.path.join(pic_folder, '*_desc.jpg'))]
-    return np.array(list(itertools.chain.from_iterable(
-        [desc.describle(m_train_word_pic) for m_train_word_pic in all_train_word_pic])))
-
-
 if __name__ == '__main__':
-    descriptor = HardNetDescriptor()
-    test_pic_folder = "../12306/12306_pics_test_cut"
-    # item_train_dataset = get_item_pic_train_dataset(test_pic_folder,descriptor)
-    vlad = VLAD(exist_visual_dict='./item_test_kmeans_cluster.pkl')
-    # vlad.train(item_train_dataset,'./item_test_kmeans_cluster.pkl')
+    #
+    # descriptor = HardNetDescriptor()
+    # test_pic_folder = "../12306/12306_pics_test_cut"
+    # # item_train_dataset = get_item_pic_train_dataset(test_pic_folder,descriptor)
+    # vlad = VLAD(exist_visual_dict='./item_test_kmeans_cluster.pkl')
+    # # vlad.train(item_train_dataset,'./item_test_kmeans_cluster.pkl')
+    # pic_path = "../12306/12306_pics_test_cut/0a0a88f7-2f20-11e9-91b7-b4b686ea7832_2.jpg"
+    # pic = Image.open(pic_path)
+    # np.set_printoptions(threshold=np.inf)
+    # print(compute_feature_vector(pic, descriptor.describle, fusion_method=vlad.aggregate))
 
-    pic_path = "../12306/12306_pics_test_cut/0a0a88f7-2f20-11e9-91b7-b4b686ea7832_2.jpg"
-    pic = Image.open(pic_path)
-    np.set_printoptions(threshold=np.inf)
-    print(compute_feature_vector(pic, descriptor.describle, fusion_method=vlad.aggregate))
+    hash_item_pic_v1('../12306/12306_pics_test_cut')
