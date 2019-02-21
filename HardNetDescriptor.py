@@ -72,7 +72,7 @@ class HardNet(nn.Module):
         return L2Norm()(x)
 
 
-class HardNetExtractor:
+class HardNetDescriptor:
     def __init__(self,model_path='./HardNet++.pth'):
         model_weights = model_path
         self.model = HardNet()
@@ -81,7 +81,7 @@ class HardNetExtractor:
         self.model.eval()
         self.model = self.model.cpu()
 
-    def extract(self, patches: list, batch_size=128) -> np.array:
+    def describle(self, patches: list, batch_size=128) -> np.array:
         """
         对所有特征点所包含的ROI进行特征提取
 
