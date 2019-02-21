@@ -4,7 +4,10 @@
 识别12306网页登录验证码
 
 ## 项目依赖
-首先获取爬虫代理，框架和方法引用自https://github.com/novioleo/proxy_pool
+首先获取爬虫代理，框架和方法引用自 [proxy_pool](https://github.com/novioleo/proxy_pool)，
+为了更方便的更改源码，这里直接下载了 [LSHash](https://github.com/kayzhu/LSHash)。
+以及使用了[HardNet](https://github.com/DagnyT/hardnet)进行特征提取，
+使用[VLAD](https://github.com/jorjasso/VLAD)进行特征融合。
 
 ## 思路
 ![流程图](./流程图.png)
