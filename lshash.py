@@ -242,19 +242,25 @@ class LSHash(object):
             d_func = LSHash.euclidean_dist_square
 
         else:
+            if isinstance(distance_func,str):
 
-            if distance_func == "euclidean":
-                d_func = LSHash.euclidean_dist_square
-            elif distance_func == "true_euclidean":
-                d_func = LSHash.euclidean_dist
-            elif distance_func == "centred_euclidean":
-                d_func = LSHash.euclidean_dist_centred
-            elif distance_func == "cosine":
-                d_func = LSHash.cosine_dist
-            elif distance_func == "l1norm":
-                d_func = LSHash.l1norm_dist
+                if distance_func == "euclidean":
+                    d_func = LSHash.euclidean_dist_square
+                elif distance_func == "true_euclidean":
+                    d_func = LSHash.euclidean_dist
+                elif distance_func == "centred_euclidean":
+                    d_func = LSHash.euclidean_dist_centred
+                elif distance_func == "cosine":
+                    d_func = LSHash.cosine_dist
+                elif distance_func == "l1norm":
+                    d_func = LSHash.l1norm_dist
+                else:
+                    raise ValueError("The distance function name is invalid.")
+            elif callable(distance_func):
+                d_func = distance_func
             else:
-                raise ValueError("The distance function name is invalid.")
+                raise ValueError("No available distance function")
+
 
             for i, table in enumerate(self.hash_tables):
                 binary_hash = self._hash(self.uniform_planes[i], query_point)
