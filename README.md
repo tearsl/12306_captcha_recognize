@@ -12,6 +12,11 @@
 ## 思路
 ![流程图](./流程图.png)
 
+## 环境
+虽然整个项目用的是pytorch作为深度学习框架，但是为了保证环境一致性，整个项目依然会放到docker中。
+关于如何使用NVIDIA-Docker，烦请参考[nvidia-docker install.sh](https://github.com/novioleo/DL_Dockerfiles/blob/master/ubuntu_docker_install.sh)
+
+
 ## how to run
 ```bash
 git clone --recurse-submodules https://github.com/tearsl/12306_captcha_recognize
