@@ -7,7 +7,7 @@ workdir /opt
 RUN apt-get update -y
 RUN apt-get install -y libopenblas-dev swig git wget
 # 配置国内源
-run pip install pip -U
+run pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pip -U
 run pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip install matplotlib
 RUN pip install python-config
