@@ -1,6 +1,6 @@
 import os
 import sys
-
+import numpy as np
 from PIL import Image
 from tqdm import tqdm
 
@@ -30,7 +30,7 @@ def cutout():
                 # 获得降色阶后的灰度图
                 # 暂时不需要进行降色阶
                 # Image.fromarray(np.array(np_gray / 16, dtype='uint8'))
-
+                im = np.array(im)
                 # 获得文字图片
                 to_save_path_word = os.path.join(pics_target_dir, pic_desc_name)
                 Image.fromarray(im[0:30, 120:120 + 80, :]).save(to_save_path_word)
