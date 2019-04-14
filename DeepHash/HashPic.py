@@ -42,7 +42,10 @@ class HashPic:
                 res = self.net(img)[0].cpu().numpy().squeeze()
             else:
                 res = self.net(Variable(img))[0].numpy().squeeze()
-        return self._hex(self._binary(res))
+        return self._binary(res)
+
+    def hash_hex(self, img):
+        return self._hex(self.hash(img))
 
 
 if __name__ == '__main__':
