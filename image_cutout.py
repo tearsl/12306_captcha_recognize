@@ -5,6 +5,19 @@ from PIL import Image
 from tqdm import tqdm
 
 
+def split_img(img: Image.Image):
+    dist = [0, 73, 145, 216]
+    im = np.array(img)
+    # 获得文字图片
+    word_img = Image.fromarray(im[0:30, 120:120 + 80, :])
+    row_1 = []
+    row_2 = []
+    for j in range(4):
+        row_1.append(Image.fromarray(im[42:42 + 66, 5 + dist[j]:5 + dist[j] + 66, :]))
+        row_2.append(Image.fromarray(im[115:115 + 66, 5 + dist[j]:5 + dist[j] + 66, :]))
+    return word_img, row_1 + row_2
+
+
 def cutout():
     pics_src_dir = sys.argv[1]
     pics_target_dir = pics_src_dir + '_cut'
