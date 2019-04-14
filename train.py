@@ -1,13 +1,19 @@
-def split_img(img):
-    return None, []
+from image_cutout import split_img
+from DeepHash import HashPic
 
 
 def get_word_img_hash(img):
     pass
 
 
-def get_item_img_hash(img):
-    pass
+def get_item_img_hash(hash_module: HashPic.HashPic, img):
+    """
+    实现物品图片的哈希化
+    :param hash_module: 用于hash化的对象
+    :param img:     需要进行化细化的图片
+    :return:    返回的hash值
+    """
+    return hash_module.hash(img)
 
 
 def add_word_img_hash_to_cluster(cluster, img_hash):
