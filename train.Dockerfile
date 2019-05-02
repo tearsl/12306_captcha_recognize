@@ -1,6 +1,6 @@
 # 具体cuda的版本需根据当前host主机的NVIDIA驱动版本对应
 from pytorch/pytorch:1.0.1-cuda10.0-cudnn7-devel
-copy sources.list /etc/apt/sources.list
+#copy sources.list /etc/apt/sources.list
 
 # 安装faiss相关依赖以及安装faiss
 workdir /opt
@@ -45,5 +45,7 @@ WORKDIR /project
 run mkdir -p /root/.torch/models
 copy alexnet-owt-4df8aa71.pth /root/.torch/models/
 add requirements.txt .
-# 建议使用自己本地最快的source文件
 run pip install -r requirements.txt
+copy sources.list /etc/apt/sources.list
+run apt-get clean && apt-get update
+run apt-get install -y libgtk2.0-dev --fix-missing
