@@ -18,8 +18,7 @@ def split_img(img: Image.Image):
     return word_img, row_1 + row_2
 
 
-def cutout():
-    pics_src_dir = sys.argv[1]
+def cutout(pics_src_dir):
     pics_target_dir = pics_src_dir + '_cut'
     # 新建存储抠图的文件夹
     os.makedirs(pics_target_dir, exist_ok=True)
@@ -68,4 +67,4 @@ def cutout():
 
 
 if __name__ == '__main__':
-    cutout()
+    cutout(pics_src_dir=sys.argv[1])
